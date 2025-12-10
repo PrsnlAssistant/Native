@@ -1,0 +1,363 @@
+version: '3'
+
+vars:
+  APP_NAME: prsnl-assistant
+  PACKAGE_ID: com.prsnl.assistant
+  # Default ADB device (can be overridden with ADB_DEVICE env var)
+  ADB_DEVICE: '{{.ADB_DEVICE | default ""}}'
+
+tasks:
+  # ============================================
+  # Development
+  # ============================================
+
+  dev:
+    desc: Run the app in desktop mode for development
+    cmds:
+      - dx serve --platform desktop
+
+  dev:hot:
+    desc: Run desktop with hot reload
+    cmds:
+      - dx serve --platform desktop --hot-reload
+
+  check:
+    desc: Run cargo check
+    cmds:
+      - cargo check
+
+  build:
+    desc: Build desktop release
+    cmds:
+      - cargo build --release
+
+  run:
+    desc: Run the desktop app directly
+    cmds:
+      - cargo run
+
+  # ============================================
+  # Android Build
+  # ============================================
+
+  android:setup:
+    desc: Set up Android build environment (run once)
+    cmds:
+      - rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
+      - echo ""
+      - echo "Android Rust targets installed!"
+      - echo ""
+      - echo "You also need Android SDK and NDK. Set these environment variables:"
+      - echo "  export ANDROID_HOME=\$HOME/Android/Sdk"
+      - echo "  export ANDROID_NDK_HOME=\$ANDROID_HOME/ndk/<version>"
+      - echo ""
+      - echo "Install SDK/NDK via Android Studio or:"
+      - echo "  sdkmanager 'platforms;android-34' 'ndk;26.1.10909125' 'build-tools;34.0.0'"
+
+  android:check:
+    desc: Check Android build environment
+    cmds:
+      - |
+        echo "=== Android Environment Check ==="
+        echo ""
+        echo "ANDROID_HOME: ${ANDROID_HOME:-NOT SET}"
+        echo "ANDROID_NDK_HOME: ${ANDROID_NDK_HOME:-NOT SET}"
+        echo ""
+        if [ -n "$ANDROID_HOME" ] && [ -d "$ANDROID_HOME" ]; then
+          echo "SDK found at $ANDROID_HOME"
+          if [ -d "$ANDROID_HOME/platforms" ]; then
+            echo "  Platforms: $(ls $ANDROID_HOME/platforms 2>/dev/null | tr '\n' ' ')"
+          fi
+          if [ -d "$ANDROID_HOME/ndk" ]; then
+            echo "  NDK versions: $(ls $ANDROID_HOME/ndk 2>/dev/null | tr '\n' ' ')"
+          fi
+        else
+          echo "WARNING: ANDROID_HOME not set or directory not found"
+        fi
+        echo ""
+        echo "Rust Android targets:"
+        rustup target list --installed | grep android || echo "  None installed (run: task android:setup)"
+        echo ""
+
+  android:build:
+    desc: Build Android APK (debug)
+    cmds:
+      - dx build --platform android
+
+  android:build:release:
+    desc: Build Android APK (release)
+    cmds:
+      - dx build --platform android --release
+
+  android:bundle:
+    desc: Bundle Android APK for distribution
+    cmds:
+      - dx bundle --platform android --release
+
+  # ============================================
+  # ADB Device Management
+  # ============================================
+
+  adb:devices:
+    desc: List connected ADB devices
+    cmds:
+      - adb devices -l
+
+  adb:pair:
+    desc: Pair with a wireless ADB device (interactive)
+    summary: |
+      Pair with a wireless debugging device.
+
+      On your Android device:
+      1. Go to Settings > Developer options > Wireless debugging
+      2. Tap "Pair device with pairing code"
+      3. Note the IP:PORT and pairing code shown
+
+      Then run: task adb:pair IP=<ip:port> CODE=<pairing-code>
+      Example: task adb:pair IP=192.168.1.100:37123 CODE=123456
+    vars:
+      IP: '{{.IP | default ""}}'
+      CODE: '{{.CODE | default ""}}'
+    cmds:
+      - |
+        if [ -z "{{.IP}}" ] || [ -z "{{.CODE}}" ]; then
+          echo "Usage: task adb:pair IP=<ip:port> CODE=<pairing-code>"
+          echo ""
+          echo "On your Android device:"
+          echo "1. Go to Settings > Developer options > Wireless debugging"
+          echo "2. Tap 'Pair device with pairing code'"
+          echo "3. Note the IP:PORT and pairing code shown"
+          echo ""
+          echo "Example: task adb:pair IP=192.168.1.100:37123 CODE=123456"
+          exit 1
+        fi
+        adb pair {{.IP}} {{.CODE}}
+
+  adb:connect:
+    desc: Connect to a wireless ADB device
+    summary: |
+      Connect to a wireless debugging device (must be paired first).
+
+      On your Android device:
+      1. Go to Settings > Developer options > Wireless debugging
+      2. Note the IP address and port shown (different from pairing port!)
+
+      Then run: task adb:connect IP=<ip:port>
+      Example: task adb:connect IP=192.168.1.100:5555
+    vars:
+      IP: '{{.IP | default ""}}'
+    cmds:
+      - |
+        if [ -z "{{.IP}}" ]; then
+          echo "Usage: task adb:connect IP=<ip:port>"
+          echo ""
+          echo "On your Android device:"
+          echo "1. Go to Settings > Developer options > Wireless debugging"
+          echo "2. Note the IP address and port shown under 'IP address & Port'"
+          echo "   (This is different from the pairing port!)"
+          echo ""
+          echo "Example: task adb:connect IP=192.168.1.100:5555"
+          exit 1
+        fi
+        adb connect {{.IP}}
+
+  adb:disconnect:
+    desc: Disconnect from wireless ADB
+    cmds:
+      - adb disconnect
+
+  adb:wireless:
+    desc: Interactive wireless ADB setup guide
+    cmds:
+      - |
+        echo "=========================================="
+        echo "  Wireless ADB Setup Guide"
+        echo "=========================================="
+        echo ""
+        echo "STEP 1: Enable Wireless Debugging on your phone"
+        echo "  - Settings > Developer options > Wireless debugging > Enable"
+        echo ""
+        echo "STEP 2: Pair your device (one-time setup)"
+        echo "  - Tap 'Pair device with pairing code'"
+        echo "  - Run: task adb:pair IP=<shown-ip:port> CODE=<shown-code>"
+        echo ""
+        echo "STEP 3: Connect to device"
+        echo "  - Note the IP:Port shown under 'IP address & Port'"
+        echo "  - Run: task adb:connect IP=<ip:port>"
+        echo ""
+        echo "STEP 4: Verify connection"
+        echo "  - Run: task adb:devices"
+        echo ""
+        echo "After setup, you can install with: task install"
+        echo "=========================================="
+
+  # ============================================
+  # Install & Deploy
+  # ============================================
+
+  install:
+    desc: Build and install APK to connected device
+    deps: [android:build]
+    cmds:
+      - |
+        APK_PATH=$(find target -name "*.apk" -type f | head -1)
+        if [ -z "$APK_PATH" ]; then
+          echo "No APK found. Build may have failed."
+          exit 1
+        fi
+        echo "Installing $APK_PATH..."
+        if [ -n "{{.ADB_DEVICE}}" ]; then
+          adb -s {{.ADB_DEVICE}} install -r "$APK_PATH"
+        else
+          adb install -r "$APK_PATH"
+        fi
+
+  install:release:
+    desc: Build release APK and install to connected device
+    deps: [android:build:release]
+    cmds:
+      - |
+        APK_PATH=$(find target -name "*.apk" -type f | head -1)
+        if [ -z "$APK_PATH" ]; then
+          echo "No APK found. Build may have failed."
+          exit 1
+        fi
+        echo "Installing $APK_PATH..."
+        if [ -n "{{.ADB_DEVICE}}" ]; then
+          adb -s {{.ADB_DEVICE}} install -r "$APK_PATH"
+        else
+          adb install -r "$APK_PATH"
+        fi
+
+  reinstall:
+    desc: Uninstall and reinstall the app
+    cmds:
+      - task: uninstall
+      - task: install
+    ignore_error: true
+
+  uninstall:
+    desc: Uninstall the app from device
+    cmds:
+      - |
+        if [ -n "{{.ADB_DEVICE}}" ]; then
+          adb -s {{.ADB_DEVICE}} uninstall {{.PACKAGE_ID}}
+        else
+          adb uninstall {{.PACKAGE_ID}}
+        fi
+    ignore_error: true
+
+  # ============================================
+  # Debugging & Logs
+  # ============================================
+
+  logs:
+    desc: Show app logs from device (logcat)
+    cmds:
+      - |
+        if [ -n "{{.ADB_DEVICE}}" ]; then
+          adb -s {{.ADB_DEVICE}} logcat -s "{{.APP_NAME}}:*" "RustStdoutStderr:*" "*:E" | grep -E "({{.APP_NAME}}|rust|dioxus)" --color=always
+        else
+          adb logcat -s "{{.APP_NAME}}:*" "RustStdoutStderr:*" "*:E" | grep -E "({{.APP_NAME}}|rust|dioxus)" --color=always
+        fi
+
+  logs:all:
+    desc: Show all device logs (unfiltered)
+    cmds:
+      - |
+        if [ -n "{{.ADB_DEVICE}}" ]; then
+          adb -s {{.ADB_DEVICE}} logcat
+        else
+          adb logcat
+        fi
+
+  logs:clear:
+    desc: Clear device logs
+    cmds:
+      - |
+        if [ -n "{{.ADB_DEVICE}}" ]; then
+          adb -s {{.ADB_DEVICE}} logcat -c
+        else
+          adb logcat -c
+        fi
+
+  shell:
+    desc: Open ADB shell on device
+    cmds:
+      - |
+        if [ -n "{{.ADB_DEVICE}}" ]; then
+          adb -s {{.ADB_DEVICE}} shell
+        else
+          adb shell
+        fi
+
+  # ============================================
+  # App Control
+  # ============================================
+
+  start:
+    desc: Start the app on device
+    cmds:
+      - |
+        if [ -n "{{.ADB_DEVICE}}" ]; then
+          adb -s {{.ADB_DEVICE}} shell am start -n {{.PACKAGE_ID}}/.MainActivity
+        else
+          adb shell am start -n {{.PACKAGE_ID}}/.MainActivity
+        fi
+
+  stop:
+    desc: Force stop the app on device
+    cmds:
+      - |
+        if [ -n "{{.ADB_DEVICE}}" ]; then
+          adb -s {{.ADB_DEVICE}} shell am force-stop {{.PACKAGE_ID}}
+        else
+          adb shell am force-stop {{.PACKAGE_ID}}
+        fi
+
+  restart:
+    desc: Restart the app on device
+    cmds:
+      - task: stop
+      - task: start
+
+  # ============================================
+  # Full Workflow
+  # ============================================
+
+  deploy:
+    desc: Full deploy - build, install, and start app
+    cmds:
+      - task: install
+      - task: start
+
+  deploy:release:
+    desc: Full release deploy - build release, install, and start
+    cmds:
+      - task: install:release
+      - task: start
+
+  deploy:fresh:
+    desc: Clean deploy - uninstall, build, install, start
+    cmds:
+      - task: uninstall
+      - task: install
+      - task: start
+    ignore_error: true
+
+  # ============================================
+  # Cleanup
+  # ============================================
+
+  clean:
+    desc: Clean build artifacts
+    cmds:
+      - cargo clean
+
+  clean:android:
+    desc: Clean Android-specific build artifacts
+    cmds:
+      - rm -rf target/aarch64-linux-android
+      - rm -rf target/armv7-linux-androideabi
+      - rm -rf target/x86_64-linux-android
+      - rm -rf target/i686-linux-android

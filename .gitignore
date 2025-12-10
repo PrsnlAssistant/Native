@@ -1,0 +1,21 @@
+# Build artifacts
+/target/
+/dist/
+
+# Nix
+/result
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment (if any secrets)
+.env.local
