@@ -138,7 +138,7 @@ fn App() -> Element {
                         style: "padding: 16px; background: #1a1a2e; color: white; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2d2d44;",
                         h1 {
                             style: "margin: 0; font-size: 1.25rem;",
-                            "Personal Assistant"
+                            "PrsnlAssistant"
                         }
                         ConnectionIndicator { status }
                     }

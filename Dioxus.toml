@@ -3,5 +3,8 @@ name = "PrsnlAssistant"
 default_platform = "desktop"
 asset_dir = "assets"
 
+[web.app]
+title = "PrsnlAssistant"
+
 [bundle]
 identifier = "com.prsnl.assistant"
