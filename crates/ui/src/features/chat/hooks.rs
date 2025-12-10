@@ -5,22 +5,29 @@ use prsnl_core::Message;
 use crate::features::media::SelectedMedia;
 use super::{ChatState, ChatService};
 
-/// Hook to get messages for the current conversation
-pub fn use_chat_messages() -> Vec<Message> {
+/// Hook to get messages for the current conversation (reactive)
+///
+/// Returns a reactive memo that updates when messages change.
+pub fn use_chat_messages() -> Memo<Vec<Message>> {
     let state = use_context::<ChatState>();
-    state.current_messages()
+    use_memo(move || state.current_messages())
 }
 
-/// Hook to get messages for a specific conversation
-pub fn use_messages_for(conv_id: &str) -> Vec<Message> {
+/// Hook to get messages for a specific conversation (reactive)
+///
+/// Returns a reactive memo that updates when messages for this conversation change.
+pub fn use_messages_for(conv_id: &str) -> Memo<Vec<Message>> {
     let state = use_context::<ChatState>();
-    state.messages_for(conv_id)
+    let conv_id = conv_id.to_string();
+    use_memo(move || state.messages_for(&conv_id))
 }
 
-/// Hook to check if assistant is typing
-pub fn use_typing_indicator() -> bool {
+/// Hook to check if assistant is typing (reactive)
+///
+/// Returns a reactive memo that updates when typing state changes.
+pub fn use_typing_indicator() -> Memo<bool> {
     let state = use_context::<ChatState>();
-    state.is_typing()
+    use_memo(move || state.is_typing())
 }
 
 /// Hook to get a send message function
@@ -32,8 +39,10 @@ pub fn use_send_message() -> impl Fn(String, Option<SelectedMedia>) + Clone {
     }
 }
 
-/// Hook to get current conversation ID
-pub fn use_current_conversation_id() -> Option<String> {
+/// Hook to get current conversation ID (reactive)
+///
+/// Returns a reactive memo that updates when the current conversation changes.
+pub fn use_current_conversation_id() -> Memo<Option<String>> {
     let state = use_context::<ChatState>();
-    state.current_conv_id()
+    use_memo(move || state.current_conv_id())
 }

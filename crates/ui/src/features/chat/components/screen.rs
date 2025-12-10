@@ -19,10 +19,14 @@ pub fn ChatScreen(
     let mut input_text = use_signal(|| String::new());
     let mut pending_media = use_signal(|| Option::<SelectedMedia>::None);
 
-    // Get messages and typing state from hooks
-    let messages = use_messages_for(&conv_id);
-    let is_typing = use_typing_indicator();
+    // Get messages and typing state from hooks (reactive memos)
+    let messages_memo = use_messages_for(&conv_id);
+    let is_typing_memo = use_typing_indicator();
     let send_message = use_send_message();
+
+    // Read reactive values
+    let messages = messages_memo.read();
+    let is_typing = *is_typing_memo.read();
 
     // Handlers
     let on_send = {
@@ -78,7 +82,7 @@ pub fn ChatScreen(
                         }
                     }
                 } else {
-                    MessageList { messages }
+                    MessageList { messages: messages.clone() }
                 }
 
                 if is_typing {
