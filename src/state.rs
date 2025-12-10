@@ -209,7 +209,7 @@ impl AppState {
             view: ViewState::ConversationList,
             connection_status: ConnectionStatus::Connecting,
             is_typing: false,
-            server_url: "ws://10.0.0.1:8765/ws".to_string(),
+            server_url: "ws://10.8.0.8:8765/ws".to_string(),
             loading_conversations: true,
         }
     }

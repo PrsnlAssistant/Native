@@ -32,7 +32,7 @@ fn App() -> Element {
         let mut state = app_state.clone();
         spawn(async move {
             // Try to connect to WebSocket server
-            let server_url = "ws://10.0.0.1:8765/ws"; // Update with your VPN IP
+            let server_url = "ws://10.8.0.8:8765/ws"; // VPN IP
             info!("Connecting to WebSocket server: {}", server_url);
 
             match websocket::connect(server_url).await {
