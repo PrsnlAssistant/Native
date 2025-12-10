@@ -9,10 +9,21 @@
 html, body {
     height: 100%;
     width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height for mobile */
     overflow: hidden;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: #0f0f23;
     color: #e0e0e0;
+}
+
+/* Ensure root element fills viewport */
+#main {
+    height: 100%;
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    background: #0f0f23;
 }
 
 /* Smooth scrolling */

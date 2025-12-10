@@ -340,9 +340,23 @@ fn handle_server_message(msg: WSServerMessage, state: &mut Signal<AppState>) {
                         "system" => MessageSender::System,
                         _ => return None,
                     };
+
+                    // Strip the metadata prefix from user messages if present
+                    // Format: "Current Date: ...\nCurrent Time: ...\nFrom: ...\nBody: ..."
+                    let body = if sender == MessageSender::User && m.content.starts_with("Current Date:") {
+                        // Find "Body: " and extract everything after it
+                        m.content
+                            .lines()
+                            .find(|line| line.starts_with("Body: "))
+                            .map(|line| line.strip_prefix("Body: ").unwrap_or(line).to_string())
+                            .unwrap_or(m.content)
+                    } else {
+                        m.content
+                    };
+
                     Some(Message {
                         id: Uuid::new_v4().to_string(),
-                        body: m.content,
+                        body,
                         timestamp: m.timestamp
                             .and_then(|t| chrono::DateTime::from_timestamp_millis(t))
                             .unwrap_or_else(Utc::now),
@@ -381,13 +395,22 @@ pub async fn send_message(
     conversation_id: &str,
     text: &str,
 ) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
+    send_message_with_image(conversation_id, text, None).await
+}
+
+/// Send a chat message with an optional image
+pub async fn send_message_with_image(
+    conversation_id: &str,
+    text: &str,
+    image: Option<ImagePayload>,
+) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
     let msg_id = Uuid::new_v4().to_string();
     let msg = WSClientMessage::Chat {
         id: msg_id.clone(),
         timestamp: chrono::Utc::now().timestamp_millis(),
         conversation_id: conversation_id.to_string(),
         body: text.to_string(),
-        image: None,
+        image,
         reply_to: None,
     };
 

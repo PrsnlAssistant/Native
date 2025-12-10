@@ -93,6 +93,9 @@
             dbus
             dbus.dev
 
+            # For file dialogs (rfd/ashpd)
+            xdotool
+
             # Java for Android builds
             jdk17
           ];

@@ -6,7 +6,7 @@ edition = "2021"
 description = "Personal Assistant Native App"
 
 [dependencies]
-dioxus = { version = "=0.7.1", features = ["mobile", "desktop"] }
+dioxus = { version = "=0.7.1", features = ["mobile", "desktop", "web"] }
 dioxus-logger = "=0.7.1"
 tracing = "0.1"
 
@@ -20,11 +20,31 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 
 # Utilities
-uuid = { version = "1", features = ["v4"] }
-chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1", features = ["v4", "js"] }
+chrono = { version = "0.4", features = ["serde", "wasmbind"] }
+
+# File picker (cross-platform) - using xdg-portal for Linux
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+rfd = { version = "0.15", default-features = false, features = ["xdg-portal", "tokio"] }
+
+# Base64 encoding for media
+base64 = "0.22"
+
+# Web-specific dependencies
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+web-sys = { version = "0.3", features = ["File", "FileList", "FileReader", "Blob", "HtmlInputElement", "Event", "Document", "Window"] }
+wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4"
+gloo-timers = "0.3"
+js-sys = "0.3"
+futures-channel = "0.3"
 
 [features]
 default = []
+
+[lib]
+name = "prsnl_assistant"
+path = "src/lib.rs"
 
 [[bin]]
 name = "prsnl-assistant"

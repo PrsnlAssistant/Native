@@ -3,9 +3,12 @@
 use dioxus::prelude::*;
 use crate::state::{ConnectionStatus, Conversation, Message, MessageSender, MessageStatus};
 
-/// Connection status indicator
+/// Connection status indicator (tappable to change server URL)
 #[component]
-pub fn ConnectionIndicator(status: ConnectionStatus) -> Element {
+pub fn ConnectionIndicator(
+    status: ConnectionStatus,
+    on_tap: EventHandler<()>,
+) -> Element {
     let (color, text) = match status {
         ConnectionStatus::Connecting => ("#ffc107", "Connecting..."),
         ConnectionStatus::Connected => ("#28a745", "Connected"),
@@ -15,13 +18,85 @@ pub fn ConnectionIndicator(status: ConnectionStatus) -> Element {
 
     rsx! {
         div {
-            style: "display: flex; align-items: center; gap: 8px;",
+            style: "display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 4px 8px; border-radius: 8px; background: rgba(255,255,255,0.1);",
+            onclick: move |_| on_tap.call(()),
             span {
                 style: "width: 10px; height: 10px; border-radius: 50%; background: {color};",
             }
             span {
                 style: "font-size: 0.875rem;",
                 "{text}"
+            }
+        }
+    }
+}
+
+/// Server URL settings modal
+#[component]
+pub fn ServerUrlModal(
+    current_url: String,
+    on_save: EventHandler<String>,
+    on_close: EventHandler<()>,
+) -> Element {
+    let mut url_input = use_signal(|| current_url.clone());
+
+    let handle_save = move |_| {
+        on_save.call(url_input.read().clone());
+    };
+
+    let handle_input = move |evt: Event<FormData>| {
+        url_input.set(evt.value().clone());
+    };
+
+    rsx! {
+        // Backdrop
+        div {
+            style: "position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1000;",
+            onclick: move |_| on_close.call(()),
+
+            // Modal
+            div {
+                style: "background: #1a1a2e; border-radius: 16px; padding: 24px; margin: 16px; max-width: 400px; width: 100%;",
+                onclick: move |evt| evt.stop_propagation(),
+
+                h2 {
+                    style: "margin: 0 0 16px 0; color: #fff; font-size: 1.25rem;",
+                    "Server Settings"
+                }
+
+                label {
+                    style: "display: block; color: #888; font-size: 0.875rem; margin-bottom: 8px;",
+                    "WebSocket Server URL"
+                }
+
+                input {
+                    style: "width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #3d3d5c; background: #0f0f23; color: #fff; font-size: 1rem; box-sizing: border-box;",
+                    r#type: "text",
+                    value: "{url_input}",
+                    placeholder: "ws://10.8.0.8:8765/ws",
+                    oninput: handle_input,
+                }
+
+                p {
+                    style: "margin: 8px 0 16px 0; color: #666; font-size: 0.75rem;",
+                    "Example: ws://192.168.1.100:8765/ws"
+                }
+
+                div {
+                    style: "display: flex; gap: 12px; justify-content: flex-end;",
+
+                    button {
+                        style: "padding: 10px 20px; border-radius: 8px; border: 1px solid #3d3d5c; background: transparent; color: #888; cursor: pointer;",
+                        onclick: move |_| on_close.call(()),
+                        "Cancel"
+                    }
+
+                    button {
+                        style: "padding: 10px 20px; border-radius: 8px; border: none; background: #1e88e5; color: white; font-weight: 600; cursor: pointer;",
+                        onclick: handle_save,
+                        "Save & Reconnect"
+                    }
+                }
             }
         }
     }
@@ -143,6 +218,7 @@ pub fn ChatHeader(
     title: String,
     on_back: EventHandler<()>,
     status: ConnectionStatus,
+    on_status_tap: EventHandler<()>,
 ) -> Element {
     rsx! {
         header {
@@ -165,7 +241,7 @@ pub fn ChatHeader(
             }
 
             // Connection status
-            ConnectionIndicator { status }
+            ConnectionIndicator { status, on_tap: on_status_tap }
         }
     }
 }
@@ -280,6 +356,7 @@ pub fn MessageInput(
     value: String,
     on_change: EventHandler<String>,
     on_send: EventHandler<()>,
+    on_media_select: EventHandler<()>,
 ) -> Element {
     let handle_input = move |evt: Event<FormData>| {
         on_change.call(evt.value().clone());
@@ -298,26 +375,37 @@ pub fn MessageInput(
     };
 
     let is_empty = value.trim().is_empty();
+    let send_bg = if is_empty { "#3d3d5c" } else { "#1e88e5" };
 
     rsx! {
         div {
             style: "padding: 12px 16px; background: #1a1a2e; border-top: 1px solid #2d2d44;",
 
             form {
-                style: "display: flex; gap: 12px; align-items: flex-end;",
+                style: "display: flex; gap: 8px; align-items: center;",
                 onsubmit: handle_submit,
 
-                textarea {
-                    style: "flex: 1; padding: 12px; border-radius: 20px; border: 1px solid #3d3d5c; background: #0f0f23; color: #fff; resize: none; font-family: inherit; font-size: 1rem; min-height: 44px; max-height: 120px;",
+                // Media upload button
+                button {
+                    style: "width: 44px; height: 44px; border-radius: 50%; border: none; background: #2d2d44; color: #888; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0;",
+                    r#type: "button",
+                    onclick: move |_| on_media_select.call(()),
+                    "+"
+                }
+
+                // Text input - using input instead of textarea for single line
+                input {
+                    style: "flex: 1; height: 44px; padding: 0 16px; border-radius: 22px; border: 1px solid #3d3d5c; background: #0f0f23; color: #fff; font-family: inherit; font-size: 1rem; box-sizing: border-box;",
+                    r#type: "text",
                     placeholder: "Type a message...",
                     value: "{value}",
-                    rows: 1,
                     oninput: handle_input,
                     onkeypress: handle_keypress,
                 }
 
+                // Send button
                 button {
-                    style: "padding: 12px 20px; border-radius: 20px; border: none; background: #1e88e5; color: white; font-weight: 600; cursor: pointer;",
+                    style: "height: 44px; padding: 0 20px; border-radius: 22px; border: none; background: {send_bg}; color: white; font-weight: 600; cursor: pointer; flex-shrink: 0;",
                     r#type: "submit",
                     disabled: is_empty,
                     "Send"
@@ -342,6 +430,52 @@ pub fn TypingIndicator() -> Element {
             }
             span {
                 style: "width: 8px; height: 8px; border-radius: 50%; background: #888;",
+            }
+        }
+    }
+}
+
+/// Media preview component for pending attachment
+#[component]
+pub fn MediaPreview(
+    media: crate::media::SelectedMedia,
+    on_remove: EventHandler<()>,
+) -> Element {
+    let src = format!("data:{};base64,{}", media.mimetype, media.data);
+
+    rsx! {
+        div {
+            style: "padding: 8px 16px; background: #1a1a2e; border-top: 1px solid #2d2d44;",
+
+            div {
+                style: "display: flex; align-items: center; gap: 12px; padding: 8px; background: #2d2d44; border-radius: 8px;",
+
+                // Thumbnail
+                img {
+                    style: "width: 60px; height: 60px; object-fit: cover; border-radius: 4px;",
+                    src: "{src}",
+                }
+
+                // Filename
+                div {
+                    style: "flex: 1; min-width: 0;",
+                    p {
+                        style: "margin: 0; color: #fff; font-size: 0.875rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;",
+                        "{media.filename}"
+                    }
+                    p {
+                        style: "margin: 4px 0 0 0; color: #888; font-size: 0.75rem;",
+                        "Tap to remove"
+                    }
+                }
+
+                // Remove button
+                button {
+                    style: "width: 32px; height: 32px; border-radius: 50%; border: none; background: #dc3545; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;",
+                    r#type: "button",
+                    onclick: move |_| on_remove.call(()),
+                    "×"
+                }
             }
         }
     }

@@ -59,6 +59,17 @@ impl Message {
         }
     }
 
+    pub fn new_user_with_image(body: String, image: ImageData) -> Self {
+        Self {
+            id: Uuid::new_v4().to_string(),
+            body,
+            timestamp: Utc::now(),
+            sender: MessageSender::User,
+            status: MessageStatus::Sending,
+            image: Some(image),
+        }
+    }
+
     pub fn new_assistant(id: String, body: String, image: Option<ImageData>) -> Self {
         Self {
             id,

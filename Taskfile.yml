@@ -37,6 +37,44 @@ tasks:
       - cargo run
 
   # ============================================
+  # Web Build
+  # ============================================
+
+  web:dev:
+    desc: Run the web app in development mode
+    cmds:
+      - dx serve --platform web
+
+  web:dev:hot:
+    desc: Run the web app with hot reload
+    cmds:
+      - dx serve --platform web --hot-reload
+
+  web:build:
+    desc: Build web release
+    cmds:
+      - dx build --platform web --release
+
+  web:bundle:
+    desc: Bundle web app for distribution
+    cmds:
+      - dx bundle --platform web --release
+
+  # ============================================
+  # Testing
+  # ============================================
+
+  test:
+    desc: Run all tests
+    cmds:
+      - cargo test
+
+  test:watch:
+    desc: Run tests in watch mode
+    cmds:
+      - cargo watch -x test
+
+  # ============================================
   # Android Build
   # ============================================
 

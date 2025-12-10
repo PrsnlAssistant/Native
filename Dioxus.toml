@@ -6,5 +6,18 @@ asset_dir = "assets"
 [web.app]
 title = "PrsnlAssistant"
 
+[web.resource]
+# Viewport meta for mobile web
+head_html = '''
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+'''
+
 [bundle]
 identifier = "com.prsnl.assistant"
+
+[bundle.android]
+# Full-screen, edge-to-edge display
+edge_to_edge = true
