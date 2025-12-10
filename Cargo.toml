@@ -6,12 +6,12 @@ edition = "2021"
 description = "Personal Assistant Native App"
 
 [dependencies]
-dioxus = { version = "0.6", features = ["mobile", "desktop"] }
-dioxus-logger = "0.6"
+dioxus = { version = "=0.7.1", features = ["mobile", "desktop"] }
+dioxus-logger = "=0.7.1"
 tracing = "0.1"
 
-# WebSocket client
-tokio-tungstenite = { version = "0.24", features = ["native-tls"] }
+# WebSocket client (using rustls for Android compatibility)
+tokio-tungstenite = { version = "0.24", features = ["rustls-tls-webpki-roots"] }
 futures-util = "0.3"
 tokio = { version = "1", features = ["rt", "sync", "macros"] }
 

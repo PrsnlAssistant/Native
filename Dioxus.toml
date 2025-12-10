@@ -1,25 +1,7 @@
 [application]
 name = "PrsnlAssistant"
 default_platform = "desktop"
+asset_dir = "assets"
 
-# Asset configuration
-[application.asset_dir]
-path = "assets"
-
-[web.app]
-title = "Personal Assistant"
-
-[web.watcher]
-reload_html = true
-watch_path = ["src", "assets"]
-
-[web.resource]
-style = []
-script = []
-
-[bundle.identifier]
-# Android bundle identifier
-android = "com.prsnl.assistant"
-
-# iOS bundle identifier (for future)
-ios = "com.prsnl.assistant"
+[bundle]
+identifier = "com.prsnl.assistant"

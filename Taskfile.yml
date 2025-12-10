@@ -80,14 +80,19 @@ tasks:
         echo ""
 
   android:build:
-    desc: Build Android APK (debug)
+    desc: Build Android APK (debug) for arm64 devices
     cmds:
-      - dx build --platform android
+      - dx build --platform android --target aarch64-linux-android
+
+  android:build:x86:
+    desc: Build Android APK (debug) for x86_64 emulator
+    cmds:
+      - dx build --platform android --target x86_64-linux-android
 
   android:build:release:
-    desc: Build Android APK (release)
+    desc: Build Android APK (release) for arm64 devices
     cmds:
-      - dx build --platform android --release
+      - dx build --platform android --release --target aarch64-linux-android
 
   android:bundle:
     desc: Bundle Android APK for distribution
@@ -300,9 +305,9 @@ tasks:
     cmds:
       - |
         if [ -n "{{.ADB_DEVICE}}" ]; then
-          adb -s {{.ADB_DEVICE}} shell am start -n {{.PACKAGE_ID}}/.MainActivity
+          adb -s {{.ADB_DEVICE}} shell am start -n {{.PACKAGE_ID}}/dev.dioxus.main.MainActivity
         else
-          adb shell am start -n {{.PACKAGE_ID}}/.MainActivity
+          adb shell am start -n {{.PACKAGE_ID}}/dev.dioxus.main.MainActivity
         fi
 
   stop:

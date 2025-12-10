@@ -24,9 +24,11 @@
         # Android SDK configuration
         androidSdk = android-nixpkgs.sdk.${system} (sdkPkgs: with sdkPkgs; [
           build-tools-34-0-0
+          build-tools-33-0-0
           cmdline-tools-latest
           platform-tools
           platforms-android-34
+          platforms-android-33
           ndk-26-1-10909125
           emulator
         ]);
