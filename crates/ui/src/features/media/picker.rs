@@ -1,20 +1,21 @@
-//! Media picker and handling for cross-platform image selection
+//! Media picker for cross-platform image selection
 
+use super::types::SelectedMedia;
+
+// Base64 encoding only needed for desktop and web implementations
+#[cfg(any(feature = "desktop", target_arch = "wasm32"))]
 use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
 
-/// Selected media from the file picker
-#[derive(Debug, Clone, PartialEq)]
-pub struct SelectedMedia {
-    pub data: String,      // Base64 encoded
-    pub mimetype: String,
-    pub filename: String,
-}
-
-/// Pick an image file using the native file picker
+/// Pick an image file using the native file picker (desktop only)
 /// Returns None if the user cancels or an error occurs
-#[cfg(not(target_arch = "wasm32"))]
+///
+/// This only compiles when:
+/// - Not targeting WASM (web has its own implementation)
+/// - Not targeting Android (Android has its own implementation)
+/// - The `desktop` feature is enabled (which enables `rfd`)
+#[cfg(all(not(target_arch = "wasm32"), not(target_os = "android"), feature = "desktop"))]
 pub async fn pick_image() -> Option<SelectedMedia> {
-    use dioxus_logger::tracing::info;
+    use tracing::info;
 
     // Use rfd for native file picking
     let file = rfd::AsyncFileDialog::new()
@@ -40,13 +41,28 @@ pub async fn pick_image() -> Option<SelectedMedia> {
     })
 }
 
+/// Pick an image file on Android/Mobile (placeholder - not implemented)
+/// Android requires JNI calls or Activity intents for file picking
+/// This compiles for:
+/// - Android target
+/// - OR mobile feature without desktop feature (allows testing mobile on desktop)
+#[cfg(any(
+    target_os = "android",
+    all(feature = "mobile", not(feature = "desktop"), not(target_arch = "wasm32"))
+))]
+pub async fn pick_image() -> Option<SelectedMedia> {
+    use tracing::warn;
+    warn!("Image picker not yet implemented for mobile platforms");
+    // TODO: Implement Android file picker using JNI/Activity intents
+    None
+}
+
 /// Pick an image file using web file input
 #[cfg(target_arch = "wasm32")]
 pub async fn pick_image() -> Option<SelectedMedia> {
     use wasm_bindgen::JsCast;
-    use wasm_bindgen_futures::JsFuture;
     use web_sys::{window, HtmlInputElement, File, FileReader};
-    use dioxus_logger::tracing::info;
+    use tracing::info;
 
     let window = window()?;
     let document = window.document()?;
@@ -127,6 +143,8 @@ pub async fn pick_image() -> Option<SelectedMedia> {
 }
 
 /// Get MIME type from filename extension
+/// Only used by desktop and web implementations
+#[cfg(any(feature = "desktop", target_arch = "wasm32"))]
 fn get_mimetype_from_filename(filename: &str) -> String {
     let ext = filename
         .rsplit('.')

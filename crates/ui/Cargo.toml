@@ -1,0 +1,37 @@
+[package]
+name = "prsnl-ui"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+description = "UI components and shells for PrsnlAssistant"
+
+[features]
+default = []
+# Desktop (Linux/macOS/Windows) with file picker support
+desktop = ["prsnl-platform-native", "dioxus/desktop", "dioxus/macro", "dioxus/hooks", "dioxus/signals", "dioxus/html", "dep:rfd"]
+# Mobile (Android/iOS) without file picker (rfd doesn't support Android)
+mobile = ["prsnl-platform-native", "dioxus/mobile", "dioxus/macro", "dioxus/hooks", "dioxus/signals", "dioxus/html"]
+# Native includes both desktop and mobile support (for builds that target both)
+native = ["desktop", "mobile"]
+# Web (WASM)
+web = ["prsnl-platform-web", "dioxus/web", "dioxus/macro", "dioxus/hooks", "dioxus/signals", "dioxus/html", "dep:web-sys", "dep:wasm-bindgen", "dep:wasm-bindgen-futures", "dep:js-sys", "dep:futures-channel"]
+
+[dependencies]
+prsnl-core.workspace = true
+prsnl-platform-native = { workspace = true, optional = true }
+prsnl-platform-web = { workspace = true, optional = true }
+dioxus.workspace = true
+tracing.workspace = true
+futures.workspace = true
+chrono.workspace = true
+base64.workspace = true
+
+# Native-only dependencies for file picking
+rfd = { workspace = true, optional = true }
+
+# Web-only dependencies for viewport detection and file picking
+web-sys = { workspace = true, optional = true }
+wasm-bindgen = { workspace = true, optional = true }
+wasm-bindgen-futures = { workspace = true, optional = true }
+js-sys = { workspace = true, optional = true }
+futures-channel = { workspace = true, optional = true }

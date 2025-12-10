@@ -12,9 +12,6 @@ pkgs.mkShell {
     # Task runner
     go-task
 
-    # Dioxus CLI
-    dioxus-cli
-
     # Android Tooling
     android-tools
     # Rust toolchain
@@ -54,6 +51,13 @@ pkgs.mkShell {
     # Dioxus specific
     dbus
     dbus.dev
+
+    # For global hotkeys / xdotool (tao/tray-icon dependency)
+    xdotool
+
+    # For WASM builds
+    wasm-bindgen-cli
+    binaryen
   ];
 
   shellHook = ''
@@ -80,11 +84,20 @@ pkgs.mkShell {
       fi
     fi
 
+    # Install dioxus-cli 0.7.2 if not present or wrong version
+    REQUIRED_DX_VERSION="0.7.2"
+    CURRENT_DX_VERSION=$(dx --version 2>/dev/null | grep -oP '\d+\.\d+\.\d+' || echo "none")
+    if [ "$CURRENT_DX_VERSION" != "$REQUIRED_DX_VERSION" ]; then
+      echo "Installing dioxus-cli v$REQUIRED_DX_VERSION..."
+      cargo install dioxus-cli --version $REQUIRED_DX_VERSION --quiet 2>/dev/null || true
+    fi
+
     echo "Dioxus Mobile Development Environment"
     echo "======================================"
     echo ""
     echo "Quick Start:"
-    echo "  task dev              - Run desktop app with hot reload"
+    echo "  task dev              - Run desktop app"
+    echo "  task web:dev          - Run web app in browser"
     echo "  task adb:wireless     - Setup wireless ADB (guide)"
     echo "  task deploy           - Build & install to device"
     echo ""

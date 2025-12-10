@@ -3,6 +3,8 @@ version: '3'
 vars:
   APP_NAME: prsnl-assistant
   PACKAGE_ID: com.prsnl.assistant
+  NATIVE_PACKAGE: prsnl-native
+  WEB_PACKAGE: prsnl-web
   # Default ADB device (can be overridden with ADB_DEVICE env var)
   ADB_DEVICE: '{{.ADB_DEVICE | default ""}}'
 
@@ -14,27 +16,38 @@ tasks:
   dev:
     desc: Run the app in desktop mode for development
     cmds:
-      - dx serve --platform desktop
+      - dx serve --platform desktop --package {{.NATIVE_PACKAGE}}
 
   dev:hot:
     desc: Run desktop with hot reload
     cmds:
-      - dx serve --platform desktop --hot-reload
+      - dx serve --platform desktop --hot-reload --package {{.NATIVE_PACKAGE}}
 
   check:
-    desc: Run cargo check
+    desc: Run cargo check for native packages
     cmds:
-      - cargo check
+      - cargo check -p {{.NATIVE_PACKAGE}}
+
+  check:web:
+    desc: Run cargo check for web package (WASM target)
+    cmds:
+      - cargo check -p {{.WEB_PACKAGE}} --target wasm32-unknown-unknown
+
+  check:all:
+    desc: Run cargo check for all packages
+    cmds:
+      - task: check
+      - task: check:web
 
   build:
     desc: Build desktop release
     cmds:
-      - cargo build --release
+      - dx build --platform desktop --release --package {{.NATIVE_PACKAGE}}
 
   run:
     desc: Run the desktop app directly
     cmds:
-      - cargo run
+      - cargo run -p {{.NATIVE_PACKAGE}}
 
   # ============================================
   # Web Build
@@ -43,22 +56,22 @@ tasks:
   web:dev:
     desc: Run the web app in development mode
     cmds:
-      - dx serve --platform web
+      - dx serve --platform web --package {{.WEB_PACKAGE}}
 
   web:dev:hot:
     desc: Run the web app with hot reload
     cmds:
-      - dx serve --platform web --hot-reload
+      - dx serve --platform web --hot-reload --package {{.WEB_PACKAGE}}
 
   web:build:
     desc: Build web release
     cmds:
-      - dx build --platform web --release
+      - dx build --platform web --release --package {{.WEB_PACKAGE}}
 
   web:bundle:
     desc: Bundle web app for distribution
     cmds:
-      - dx bundle --platform web --release
+      - dx bundle --platform web --release --package {{.WEB_PACKAGE}}
 
   # ============================================
   # Testing
@@ -67,12 +80,12 @@ tasks:
   test:
     desc: Run all tests
     cmds:
-      - cargo test
+      - cargo test --workspace
 
   test:watch:
     desc: Run tests in watch mode
     cmds:
-      - cargo watch -x test
+      - cargo watch -x "test --workspace"
 
   # ============================================
   # Android Build
@@ -120,22 +133,22 @@ tasks:
   android:build:
     desc: Build Android APK (debug) for arm64 devices
     cmds:
-      - dx build --platform android --target aarch64-linux-android
+      - dx build --platform android --target aarch64-linux-android --package {{.NATIVE_PACKAGE}}
 
   android:build:x86:
     desc: Build Android APK (debug) for x86_64 emulator
     cmds:
-      - dx build --platform android --target x86_64-linux-android
+      - dx build --platform android --target x86_64-linux-android --package {{.NATIVE_PACKAGE}}
 
   android:build:release:
     desc: Build Android APK (release) for arm64 devices
     cmds:
-      - dx build --platform android --release --target aarch64-linux-android
+      - dx build --platform android --release --target aarch64-linux-android --package {{.NATIVE_PACKAGE}}
 
   android:bundle:
     desc: Bundle Android APK for distribution
     cmds:
-      - dx bundle --platform android --release
+      - dx bundle --platform android --release --package {{.NATIVE_PACKAGE}}
 
   # ============================================
   # ADB Device Management

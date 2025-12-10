@@ -1,0 +1,27 @@
+[package]
+name = "prsnl-native"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+description = "Native application binary for PrsnlAssistant"
+
+[[bin]]
+name = "prsnl-native"
+path = "src/main.rs"
+
+[dependencies]
+prsnl-core.workspace = true
+prsnl-platform-native.workspace = true
+dioxus = { workspace = true, features = ["desktop", "mobile", "macro", "hooks", "signals", "html", "launch"] }
+tokio.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+futures.workspace = true
+
+# Desktop-only dependencies (with rfd file picker)
+[target.'cfg(not(target_os = "android"))'.dependencies]
+prsnl-ui = { workspace = true, features = ["desktop"] }
+
+# Android-only dependencies (without rfd)
+[target.'cfg(target_os = "android")'.dependencies]
+prsnl-ui = { workspace = true, features = ["mobile"] }

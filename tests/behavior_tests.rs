@@ -3,8 +3,11 @@
 //! These tests verify the core functionality of the application
 //! using a BDD (Behavior-Driven Development) approach.
 
-use prsnl_assistant::state::*;
-use prsnl_assistant::media::SelectedMedia;
+use prsnl_assistant::shared::{
+    Message, MessageSender, MessageStatus, ImageData, Conversation, ConnectionStatus,
+};
+use prsnl_assistant::features::media::SelectedMedia;
+use prsnl_assistant::features::conversations::ViewState;
 
 mod message_behavior {
     use super::*;
@@ -163,107 +166,22 @@ mod conversation_behavior {
     }
 }
 
-mod app_state_behavior {
+mod view_state_behavior {
     use super::*;
 
     #[test]
-    fn given_new_app_state_when_initialized_then_starts_at_conversation_list() {
-        // Given/When: Creating new app state
-        let state = AppState::new();
+    fn given_view_states_when_compared_then_work_correctly() {
+        // Given: Various view states
+        let list = ViewState::ConversationList;
+        let chat1 = ViewState::Chat("conv-1".to_string());
+        let chat2 = ViewState::Chat("conv-1".to_string());
+        let chat3 = ViewState::Chat("conv-2".to_string());
 
-        // Then: Should start at conversation list view
-        assert!(matches!(state.view, ViewState::ConversationList));
-        assert!(state.conversations.is_empty());
-        assert!(matches!(state.connection_status, ConnectionStatus::Connecting));
-    }
-
-    #[test]
-    fn given_conversation_when_opening_then_switches_view() {
-        // Given: App state with a conversation
-        let mut state = AppState::new();
-        let conv = Conversation::new("conv-123".to_string(), None);
-        state.upsert_conversation(conv);
-
-        // When: Opening the conversation
-        state.open_conversation("conv-123");
-
-        // Then: View should switch to chat
-        assert!(matches!(state.view, ViewState::Chat(ref id) if id == "conv-123"));
-    }
-
-    #[test]
-    fn given_chat_view_when_going_back_then_returns_to_list() {
-        // Given: App state in chat view
-        let mut state = AppState::new();
-        let conv = Conversation::new("conv-123".to_string(), None);
-        state.upsert_conversation(conv);
-        state.open_conversation("conv-123");
-
-        // When: Going back
-        state.go_to_list();
-
-        // Then: View should return to conversation list
-        assert!(matches!(state.view, ViewState::ConversationList));
-    }
-
-    #[test]
-    fn given_conversations_when_sorted_then_most_recent_first() {
-        // Given: App state with multiple conversations
-        let mut state = AppState::new();
-
-        let mut conv1 = Conversation::new("conv-1".to_string(), None);
-        let mut conv2 = Conversation::new("conv-2".to_string(), None);
-
-        // Add messages at different times
-        let msg1 = Message::new_user("First".to_string());
-        conv1.add_user_message(msg1);
-
-        // Small delay to ensure different timestamps
-        std::thread::sleep(std::time::Duration::from_millis(10));
-
-        let msg2 = Message::new_user("Second".to_string());
-        conv2.add_user_message(msg2);
-
-        state.upsert_conversation(conv1);
-        state.upsert_conversation(conv2);
-
-        // When: Getting sorted conversations
-        let sorted = state.sorted_conversations();
-
-        // Then: conv2 should be first (more recent)
-        assert_eq!(sorted.len(), 2);
-        assert_eq!(sorted[0].id, "conv-2");
-        assert_eq!(sorted[1].id, "conv-1");
-    }
-
-    #[test]
-    fn given_conversation_when_deleted_then_removed_and_view_changes() {
-        // Given: App state viewing a conversation
-        let mut state = AppState::new();
-        let conv = Conversation::new("conv-123".to_string(), None);
-        state.upsert_conversation(conv);
-        state.open_conversation("conv-123");
-
-        // When: Deleting the conversation
-        state.delete_conversation("conv-123");
-
-        // Then: Conversation should be removed and view should change
-        assert!(!state.conversations.contains_key("conv-123"));
-        assert!(matches!(state.view, ViewState::ConversationList));
-    }
-
-    #[test]
-    fn given_state_when_creating_conversation_then_switches_to_it() {
-        // Given: Empty app state
-        let mut state = AppState::new();
-
-        // When: Creating a new conversation
-        state.create_conversation("conv-new".to_string(), Some("My New Chat".to_string()));
-
-        // Then: Should create and switch to the conversation
-        assert!(state.conversations.contains_key("conv-new"));
-        assert!(matches!(state.view, ViewState::Chat(ref id) if id == "conv-new"));
-        assert_eq!(state.conversations.get("conv-new").unwrap().title, "My New Chat");
+        // When/Then: States should be distinguishable
+        assert_eq!(list, ViewState::ConversationList);
+        assert_eq!(chat1, chat2);
+        assert_ne!(chat1, chat3);
+        assert_ne!(list, chat1);
     }
 }
 

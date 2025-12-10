@@ -46,9 +46,6 @@
             # Task runner
             go-task
 
-            # Dioxus CLI
-            dioxus-cli
-
             # Android SDK (from android-nixpkgs)
             androidSdk
 
@@ -98,6 +95,10 @@
 
             # Java for Android builds
             jdk17
+
+            # For WASM builds
+            wasm-bindgen-cli
+            binaryen
           ];
 
           shellHook = ''
@@ -122,6 +123,14 @@
             # Java for Android builds
             export JAVA_HOME="${pkgs.jdk17}"
 
+            # Install dioxus-cli 0.7.2 if not present or wrong version
+            REQUIRED_DX_VERSION="0.7.2"
+            CURRENT_DX_VERSION=$(dx --version 2>/dev/null | grep -oP '\d+\.\d+\.\d+' || echo "none")
+            if [ "$CURRENT_DX_VERSION" != "$REQUIRED_DX_VERSION" ]; then
+              echo "Installing dioxus-cli v$REQUIRED_DX_VERSION..."
+              cargo install dioxus-cli --version $REQUIRED_DX_VERSION --quiet 2>/dev/null || true
+            fi
+
             echo "Dioxus Mobile Development Environment (Flake)"
             echo "=============================================="
             echo ""
@@ -129,7 +138,8 @@
             echo "Android NDK: $ANDROID_NDK_HOME"
             echo ""
             echo "Quick Start:"
-            echo "  task dev              - Run desktop app with hot reload"
+            echo "  task dev              - Run desktop app"
+            echo "  task web:dev          - Run web app in browser"
             echo "  task adb:wireless     - Setup wireless ADB (guide)"
             echo "  task deploy           - Build & install to device"
             echo ""

@@ -1,0 +1,20 @@
+[package]
+name = "prsnl-platform-web"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+description = "Web platform adapter for PrsnlAssistant (web-sys + futures-channel)"
+
+[dependencies]
+prsnl-core.workspace = true
+web-sys.workspace = true
+wasm-bindgen.workspace = true
+wasm-bindgen-futures.workspace = true
+futures-channel.workspace = true
+futures.workspace = true
+js-sys.workspace = true
+gloo-timers.workspace = true
+tracing.workspace = true
+serde_json.workspace = true
+uuid.workspace = true
+chrono.workspace = true

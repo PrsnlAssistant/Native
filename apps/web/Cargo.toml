@@ -1,0 +1,21 @@
+[package]
+name = "prsnl-web"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+description = "Web application binary for PrsnlAssistant"
+
+[[bin]]
+name = "prsnl-web"
+path = "src/main.rs"
+
+[dependencies]
+prsnl-core.workspace = true
+prsnl-platform-web.workspace = true
+prsnl-ui = { workspace = true, features = ["web"] }
+dioxus = { workspace = true, features = ["web", "macro", "hooks", "signals", "html", "launch"] }
+tracing.workspace = true
+console_error_panic_hook.workspace = true
+getrandom.workspace = true
+futures.workspace = true
+tracing-wasm = "0.2"
