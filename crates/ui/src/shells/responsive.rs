@@ -9,6 +9,7 @@
 //! - **Desktop (Linux/macOS/Windows)**: Uses DesktopShell (side-by-side)
 
 use dioxus::prelude::*;
+use dioxus::document::Link;
 
 // Conditionally import shells based on what's needed for each platform
 #[cfg(any(target_os = "android", target_os = "ios", target_arch = "wasm32"))]
@@ -106,6 +107,8 @@ pub fn ResponsiveApp() -> Element {
     {
         tracing::debug!("ResponsiveApp: Mobile platform detected, using MobileShell");
         rsx! {
+            // Include Tailwind CSS
+            Link { rel: "stylesheet", href: asset!("/assets/tailwind.css") }
             MobileShell {}
         }
     }
@@ -119,6 +122,8 @@ pub fn ResponsiveApp() -> Element {
         tracing::debug!("ResponsiveApp: Web platform, viewport width: {}px, is_mobile: {}", *width.read(), is_mobile);
 
         rsx! {
+            // Include Tailwind CSS
+            Link { rel: "stylesheet", href: asset!("/assets/tailwind.css") }
             if is_mobile {
                 MobileShell {}
             } else {
@@ -136,6 +141,8 @@ pub fn ResponsiveApp() -> Element {
     {
         tracing::debug!("ResponsiveApp: Desktop platform detected, using DesktopShell");
         rsx! {
+            // Include Tailwind CSS
+            Link { rel: "stylesheet", href: asset!("/assets/tailwind.css") }
             DesktopShell {}
         }
     }

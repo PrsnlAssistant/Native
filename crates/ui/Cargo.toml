@@ -8,13 +8,13 @@ description = "UI components and shells for PrsnlAssistant"
 [features]
 default = []
 # Desktop (Linux/macOS/Windows) with file picker support
-desktop = ["prsnl-platform-native", "dioxus/desktop", "dioxus/macro", "dioxus/hooks", "dioxus/signals", "dioxus/html", "dep:rfd"]
+desktop = ["prsnl-platform-native", "dioxus/desktop", "dioxus/macro", "dioxus/hooks", "dioxus/signals", "dioxus/html", "dioxus/document", "dioxus/asset", "dep:rfd"]
 # Mobile (Android/iOS) without file picker (rfd doesn't support Android)
-mobile = ["prsnl-platform-native", "dioxus/mobile", "dioxus/macro", "dioxus/hooks", "dioxus/signals", "dioxus/html"]
+mobile = ["prsnl-platform-native", "dioxus/mobile", "dioxus/macro", "dioxus/hooks", "dioxus/signals", "dioxus/html", "dioxus/document", "dioxus/asset"]
 # Native includes both desktop and mobile support (for builds that target both)
 native = ["desktop", "mobile"]
 # Web (WASM)
-web = ["prsnl-platform-web", "dioxus/web", "dioxus/macro", "dioxus/hooks", "dioxus/signals", "dioxus/html", "dep:web-sys", "dep:wasm-bindgen", "dep:wasm-bindgen-futures", "dep:js-sys", "dep:futures-channel"]
+web = ["prsnl-platform-web", "dioxus/web", "dioxus/macro", "dioxus/hooks", "dioxus/signals", "dioxus/html", "dioxus/document", "dioxus/asset", "dep:web-sys", "dep:wasm-bindgen", "dep:wasm-bindgen-futures", "dep:js-sys", "dep:futures-channel"]
 
 [dependencies]
 prsnl-core.workspace = true

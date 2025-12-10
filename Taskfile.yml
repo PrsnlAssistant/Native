@@ -17,6 +17,8 @@ tasks:
     desc: Build Tailwind CSS (one-time)
     cmds:
       - npm run build:css
+      - mkdir -p crates/ui/assets
+      - cp assets/tailwind.css crates/ui/assets/tailwind.css
 
   tailwind:watch:
     desc: Watch and rebuild Tailwind CSS on changes
@@ -27,6 +29,8 @@ tasks:
     desc: Build minified Tailwind CSS for production
     cmds:
       - npm run build:css:minify
+      - mkdir -p crates/ui/assets
+      - cp assets/tailwind.css crates/ui/assets/tailwind.css
 
   # ============================================
   # Development

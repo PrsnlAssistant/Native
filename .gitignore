@@ -22,6 +22,7 @@ Thumbs.db
 
 # Generated CSS (Tailwind output)
 assets/tailwind.css
+crates/ui/assets/
 
 # Node.js
 node_modules/
