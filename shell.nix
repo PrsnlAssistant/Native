@@ -12,6 +12,10 @@ pkgs.mkShell {
     # Task runner
     go-task
 
+    # Node.js for Tailwind CSS
+    nodejs_20
+    nodePackages.npm
+
     # Android Tooling
     android-tools
     # Rust toolchain

@@ -86,8 +86,7 @@ pub fn MobileShell() -> Element {
 
     rsx! {
         div {
-            class: "mobile-shell",
-            style: "height: 100vh; height: 100dvh; display: flex; flex-direction: column; background-color: #0f0f23; color: #e0e0e0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;",
+            class: "h-screen h-dvh flex flex-col bg-bg-primary text-text-primary font-sans",
 
             match view.read().clone() {
                 MobileView::ConversationList => rsx! {
@@ -132,11 +131,10 @@ pub fn MobileShell() -> Element {
 fn MobileListHeader() -> Element {
     rsx! {
         header {
-            class: "mobile-list-header",
-            style: "flex-shrink: 0; padding: 16px; border-bottom: 1px solid #2d2d44; display: flex; justify-content: space-between; align-items: center; background-color: #1a1a2e;",
+            class: "shrink-0 p-4 border-b border-border flex justify-between items-center bg-bg-secondary",
 
             h1 {
-                style: "margin: 0; font-size: 20px; font-weight: 600; color: #ffffff;",
+                class: "m-0 text-3xl font-semibold text-text-white",
                 "Conversations"
             }
 

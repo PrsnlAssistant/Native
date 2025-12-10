@@ -1,0 +1,173 @@
+@import "tailwindcss";
+
+/* Custom theme configuration */
+@theme {
+  /* Background colors */
+  --color-bg-primary: #0f0f23;
+  --color-bg-secondary: #1a1a2e;
+  --color-bg-tertiary: #2d2d44;
+  --color-bg-hover: #1f1f3a;
+
+  /* Text colors */
+  --color-text-primary: #e0e0e0;
+  --color-text-secondary: #8888a8;
+  --color-text-muted: #6b6b8a;
+  --color-text-white: #ffffff;
+
+  /* Accent colors */
+  --color-accent: #1e88e5;
+  --color-accent-hover: #1976d2;
+  --color-accent-light: oklch(0.59 0.15 250 / 0.5);
+
+  /* Status colors */
+  --color-success: #4ade80;
+  --color-warning: #fbbf24;
+  --color-error: #ef4444;
+
+  /* Border colors */
+  --color-border: #2d2d44;
+  --color-border-light: #3d3d5c;
+
+  /* Custom spacing */
+  --spacing-18: 4.5rem;
+  --spacing-22: 5.5rem;
+
+  /* Custom widths */
+  --width-sidebar: 300px;
+
+  /* Custom animations */
+  --animate-slide-in: slide-in 0.2s ease-out;
+  --animate-bounce-dot: bounce-dot 1.4s infinite ease-in-out both;
+  --animate-pulse-status: pulse-status 1.5s infinite;
+}
+
+/* Keyframe definitions */
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce-dot {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-status {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Base layer overrides */
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body {
+    height: 100%;
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow: hidden;
+  }
+
+  #main {
+    height: 100%;
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-bg-secondary);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-bg-tertiary);
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #4d4d6c;
+  }
+
+  /* Selection */
+  ::selection {
+    background: var(--color-accent-light);
+  }
+
+  /* Placeholder */
+  textarea::placeholder,
+  input::placeholder {
+    color: var(--color-text-muted);
+  }
+}
+
+/* Component layer */
+@layer components {
+  /* Safe area insets for mobile */
+  .safe-area-insets {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Message bubbles */
+  .message-bubble {
+    @apply max-w-[80%] rounded-2xl px-4 py-3 text-[15px] leading-relaxed;
+  }
+
+  .message-bubble-user {
+    @apply bg-accent text-white;
+  }
+
+  .message-bubble-assistant {
+    @apply bg-bg-tertiary text-text-primary;
+  }
+}
+
+/* Utility layer */
+@layer utilities {
+  /* Dynamic viewport height */
+  .h-dvh {
+    height: 100dvh;
+  }
+
+  .min-h-dvh {
+    min-height: 100dvh;
+  }
+
+  /* Touch highlight removal */
+  .tap-highlight-none {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Animation delays for typing dots */
+  .animation-delay-150 {
+    animation-delay: -0.32s;
+  }
+
+  .animation-delay-300 {
+    animation-delay: -0.16s;
+  }
+}

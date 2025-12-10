@@ -19,24 +19,24 @@ pub fn ServerUrlModal(
         // Backdrop
         div {
             onclick: move |_| on_close.call(()),
-            style: "position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1000;",
+            class: "fixed inset-0 bg-black/70 flex items-center justify-center z-[1000]",
 
             // Modal content
             div {
                 onclick: move |e| e.stop_propagation(),
-                style: "background: #1a1a2e; border-radius: 16px; padding: 24px; width: 90%; max-width: 400px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);",
+                class: "bg-bg-secondary rounded-2xl p-6 w-[90%] max-w-[400px] shadow-2xl",
 
                 // Header
                 h2 {
-                    style: "color: white; margin: 0 0 16px 0; font-size: 1.25rem;",
+                    class: "text-text-white m-0 mb-4 text-xl",
                     "Server Settings"
                 }
 
                 // URL input
                 div {
-                    style: "margin-bottom: 16px;",
+                    class: "mb-4",
                     label {
-                        style: "display: block; color: #888; font-size: 0.875rem; margin-bottom: 8px;",
+                        class: "block text-text-muted text-sm mb-2",
                         "WebSocket URL"
                     }
                     input {
@@ -44,29 +44,29 @@ pub fn ServerUrlModal(
                         value: "{url_input}",
                         oninput: move |e| url_input.set(e.value()),
                         placeholder: "ws://hostname:port/ws",
-                        style: "width: 100%; padding: 12px; border: 1px solid #2d2d44; border-radius: 8px; background: #0f0f23; color: white; font-size: 1rem; box-sizing: border-box;",
+                        class: "w-full p-3 border border-border rounded-lg bg-bg-primary text-text-white text-base box-border outline-none focus:border-accent",
                     }
                 }
 
                 // Help text
                 p {
-                    style: "color: #666; font-size: 0.75rem; margin-bottom: 24px;",
+                    class: "text-text-muted text-xs mb-6",
                     "Enter the WebSocket server address. Changes will trigger a reconnection."
                 }
 
                 // Buttons
                 div {
-                    style: "display: flex; gap: 12px; justify-content: flex-end;",
+                    class: "flex gap-3 justify-end",
 
                     button {
                         onclick: move |_| on_close.call(()),
-                        style: "padding: 12px 24px; border: 1px solid #2d2d44; border-radius: 8px; background: transparent; color: white; cursor: pointer; font-size: 1rem;",
+                        class: "py-3 px-6 border border-border rounded-lg bg-transparent text-text-white cursor-pointer text-base hover:bg-bg-hover transition-colors",
                         "Cancel"
                     }
 
                     button {
                         onclick: handle_save,
-                        style: "padding: 12px 24px; border: none; border-radius: 8px; background: #1e88e5; color: white; cursor: pointer; font-size: 1rem;",
+                        class: "py-3 px-6 border-none rounded-lg bg-accent text-text-white cursor-pointer text-base hover:bg-accent-hover transition-colors",
                         "Save"
                     }
                 }

@@ -14,12 +14,12 @@ pub fn ChatHeader(
 ) -> Element {
     rsx! {
         header {
-            style: "flex-shrink: 0; padding: 12px 16px; background: #1a1a2e; color: white; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #2d2d44;",
+            class: "shrink-0 py-3 px-4 bg-bg-secondary text-text-white flex items-center gap-3 border-b border-border",
 
             // Back button
             button {
                 onclick: move |_| on_back.call(()),
-                style: "background: none; border: none; color: white; cursor: pointer; padding: 8px; margin: -8px;",
+                class: "bg-transparent border-none text-text-white cursor-pointer p-2 -m-2",
                 svg {
                     width: "24",
                     height: "24",
@@ -33,7 +33,7 @@ pub fn ChatHeader(
 
             // Title
             h1 {
-                style: "margin: 0; font-size: 1.125rem; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;",
+                class: "m-0 text-lg flex-1 overflow-hidden text-ellipsis whitespace-nowrap",
                 "{title}"
             }
 

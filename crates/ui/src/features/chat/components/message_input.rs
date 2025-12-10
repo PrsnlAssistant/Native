@@ -10,20 +10,18 @@ pub fn MessageInput(
     on_send: EventHandler<()>,
     on_media_select: EventHandler<()>,
 ) -> Element {
-    let button_style = "width: 44px; min-width: 44px; height: 44px; border-radius: 22px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0;";
-
     rsx! {
         div {
-            style: "flex-shrink: 0; padding: 12px 16px; background: #1a1a2e; border-top: 1px solid #2d2d44; display: flex; gap: 8px; align-items: center;",
+            class: "shrink-0 py-3 px-4 bg-bg-secondary border-t border-border flex gap-2 items-center",
 
             // Media upload button
             button {
                 onclick: move |_| on_media_select.call(()),
-                style: "{button_style} background: #2d2d44; color: white; font-size: 20px;",
+                class: "w-11 min-w-11 h-11 rounded-full border-none cursor-pointer flex items-center justify-center shrink-0 bg-bg-tertiary text-text-white text-xl",
                 "+"
             }
 
-            // Text input - use min-width: 0 to allow flex shrinking properly
+            // Text input - use min-w-0 to allow flex shrinking properly
             input {
                 r#type: "text",
                 value: "{value}",
@@ -34,14 +32,14 @@ pub fn MessageInput(
                         on_send.call(());
                     }
                 },
-                style: "flex: 1; min-width: 0; height: 44px; padding: 0 16px; border: none; border-radius: 22px; background: #2d2d44; color: white; font-size: 1rem; outline: none; box-sizing: border-box;",
+                class: "flex-1 min-w-0 h-11 px-4 border-none rounded-full bg-bg-tertiary text-text-white text-base outline-none box-border",
             }
 
             // Send button
             button {
                 onclick: move |_| on_send.call(()),
                 disabled: value.trim().is_empty(),
-                style: "{button_style} background: #1e88e5; color: white;",
+                class: "w-11 min-w-11 h-11 rounded-full border-none cursor-pointer flex items-center justify-center shrink-0 bg-accent text-text-white disabled:opacity-50",
                 svg {
                     width: "24",
                     height: "24",

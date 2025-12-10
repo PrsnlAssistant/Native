@@ -11,11 +11,11 @@ reload_html = true
 watch_path = ["crates", "apps", "assets"]
 
 [web.resource]
-style = []
+style = ["assets/tailwind.css"]
 script = []
 
 [web.resource.dev]
-style = []
+style = ["assets/tailwind.css"]
 script = []
 
 [bundle]

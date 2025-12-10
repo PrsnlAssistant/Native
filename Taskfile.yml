@@ -10,17 +10,38 @@ vars:
 
 tasks:
   # ============================================
+  # Tailwind CSS
+  # ============================================
+
+  tailwind:build:
+    desc: Build Tailwind CSS (one-time)
+    cmds:
+      - npm run build:css
+
+  tailwind:watch:
+    desc: Watch and rebuild Tailwind CSS on changes
+    cmds:
+      - npm run watch:css
+
+  tailwind:minify:
+    desc: Build minified Tailwind CSS for production
+    cmds:
+      - npm run build:css:minify
+
+  # ============================================
   # Development
   # ============================================
 
   dev:
     desc: Run the app in desktop mode for development
     cmds:
+      - task: tailwind:build
       - dx serve --platform desktop --package {{.NATIVE_PACKAGE}}
 
   dev:hot:
     desc: Run desktop with hot reload
     cmds:
+      - task: tailwind:build
       - dx serve --platform desktop --hot-reload --package {{.NATIVE_PACKAGE}}
 
   check:
@@ -56,11 +77,13 @@ tasks:
   web:dev:
     desc: Run the web app in development mode
     cmds:
+      - task: tailwind:build
       - dx serve --platform web --package {{.WEB_PACKAGE}}
 
   web:dev:hot:
     desc: Run the web app with hot reload
     cmds:
+      - task: tailwind:build
       - dx serve --platform web --hot-reload --package {{.WEB_PACKAGE}}
 
   web:build:

@@ -38,31 +38,31 @@ pub fn ConversationItem(
     rsx! {
         button {
             onclick: move |_| on_select.call(conv_id.clone()),
-            style: "width: 100%; padding: 16px; background: transparent; border: none; border-bottom: 1px solid #2d2d44; text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 4px;",
+            class: "w-full p-4 bg-transparent border-none border-b border-border text-left cursor-pointer flex flex-col gap-1 hover:bg-bg-hover transition-colors",
 
             // Title and time row
             div {
-                style: "display: flex; justify-content: space-between; align-items: center;",
+                class: "flex justify-between items-center",
                 span {
-                    style: "color: white; font-weight: 500;",
+                    class: "text-text-white font-medium",
                     "{conversation.title}"
                 }
                 span {
-                    style: "color: #888; font-size: 0.75rem;",
+                    class: "text-text-muted text-xs",
                     "{time_ago}"
                 }
             }
 
             // Preview and count row
             div {
-                style: "display: flex; justify-content: space-between; align-items: center;",
+                class: "flex justify-between items-center",
                 span {
-                    style: "color: #888; font-size: 0.875rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;",
+                    class: "text-text-secondary text-sm overflow-hidden text-ellipsis whitespace-nowrap flex-1",
                     "{preview_truncated}"
                 }
                 if conversation.message_count > 0 {
                     span {
-                        style: "color: #666; font-size: 0.75rem; margin-left: 8px;",
+                        class: "text-text-muted text-xs ml-2",
                         "{conversation.message_count} msgs"
                     }
                 }

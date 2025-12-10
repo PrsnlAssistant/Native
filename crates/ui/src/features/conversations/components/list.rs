@@ -14,19 +14,19 @@ pub fn ConversationList(
 ) -> Element {
     rsx! {
         div {
-            style: "flex: 1; overflow-y: auto;",
+            class: "flex-1 overflow-y-auto",
 
             if loading {
                 div {
-                    style: "display: flex; justify-content: center; padding: 32px; color: #888;",
+                    class: "flex justify-center p-8 text-text-muted",
                     "Loading conversations..."
                 }
             } else if conversations.is_empty() {
                 div {
-                    style: "display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px; color: #888;",
+                    class: "flex flex-col items-center justify-center p-8 text-text-muted",
                     p { "No conversations yet" }
                     p {
-                        style: "font-size: 0.875rem;",
+                        class: "text-sm",
                         "Tap the button below to start"
                     }
                 }
@@ -41,10 +41,10 @@ pub fn ConversationList(
             }
         }
 
-        // New chat button
+        // New chat button (FAB)
         button {
             onclick: move |_| on_new.call(()),
-            style: "position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px; border-radius: 28px; background: #1e88e5; color: white; border: none; font-size: 24px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;",
+            class: "fixed bottom-6 right-6 w-14 h-14 rounded-full bg-accent text-text-white border-none text-2xl cursor-pointer shadow-lg flex items-center justify-center hover:bg-accent-hover transition-colors",
             "+"
         }
     }

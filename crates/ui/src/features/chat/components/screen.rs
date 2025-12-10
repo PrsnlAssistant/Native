@@ -53,8 +53,7 @@ pub fn ChatScreen(
 
     rsx! {
         div {
-            class: "app-container",
-            style: "display: flex; flex-direction: column; height: 100vh; height: 100dvh; min-height: 100%; font-family: system-ui, -apple-system, sans-serif; background: #0f0f23;",
+            class: "flex flex-col h-screen h-dvh min-h-full font-sans bg-bg-primary",
 
             // Header
             ChatHeader {
@@ -66,15 +65,15 @@ pub fn ChatScreen(
 
             // Messages area
             div {
-                style: "flex: 1; overflow-y: auto; padding: 16px; background: #0f0f23; min-height: 0;",
+                class: "flex-1 overflow-y-auto p-4 bg-bg-primary min-h-0",
                 id: "chat-container",
 
                 if messages.is_empty() {
                     div {
-                        style: "display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #888;",
+                        class: "flex flex-col items-center justify-center h-full text-text-muted",
                         p { "Start a conversation" }
                         p {
-                            style: "font-size: 0.875rem;",
+                            class: "text-sm",
                             "Type a message below"
                         }
                     }

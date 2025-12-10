@@ -9,23 +9,22 @@ pub fn MessageBubble(message: Message) -> Element {
     let is_user = message.sender == MessageSender::User;
     let is_system = message.sender == MessageSender::System;
 
-    let bg_color = if is_system {
-        "#2d2d44"
+    // Use Tailwind component classes with conditional variants
+    let container_class = if is_system {
+        "flex justify-center mb-3"
     } else if is_user {
-        "#1e88e5"
+        "flex justify-end mb-3"
     } else {
-        "#2d2d44"
+        "flex justify-start mb-3"
     };
 
-    let align = if is_system {
-        "center"
+    let bubble_class = if is_system {
+        "message-bubble max-w-[90%] bg-bg-tertiary"
     } else if is_user {
-        "flex-end"
+        "message-bubble message-bubble-user"
     } else {
-        "flex-start"
+        "message-bubble message-bubble-assistant"
     };
-
-    let max_width = if is_system { "90%" } else { "80%" };
 
     // Format timestamp
     let time = message.timestamp.format("%H:%M").to_string();
@@ -44,11 +43,10 @@ pub fn MessageBubble(message: Message) -> Element {
 
     rsx! {
         div {
-            class: "message-bubble",
-            style: "display: flex; justify-content: {align}; margin-bottom: 12px;",
+            class: "{container_class}",
 
             div {
-                style: "max-width: {max_width}; background: {bg_color}; padding: 12px 16px; border-radius: 16px; color: white;",
+                class: "{bubble_class}",
 
                 // Image if present
                 if let Some(ref image) = message.image {
@@ -56,10 +54,10 @@ pub fn MessageBubble(message: Message) -> Element {
                         let img_src = format!("data:{};base64,{}", image.mimetype, image.data);
                         rsx! {
                             div {
-                                style: "margin-bottom: 8px;",
+                                class: "mb-2",
                                 img {
                                     src: "{img_src}",
-                                    style: "max-width: 100%; max-height: 200px; border-radius: 8px;",
+                                    class: "max-w-full max-h-[200px] rounded-lg",
                                 }
                             }
                         }
@@ -69,30 +67,30 @@ pub fn MessageBubble(message: Message) -> Element {
                 // Message body
                 if !message.body.is_empty() {
                     p {
-                        style: "margin: 0; white-space: pre-wrap; word-break: break-word;",
+                        class: "m-0 whitespace-pre-wrap break-words",
                         "{message.body}"
                     }
                 }
 
                 // Footer with time and status
                 div {
-                    style: "display: flex; justify-content: flex-end; align-items: center; gap: 4px; margin-top: 4px;",
+                    class: "flex justify-end items-center gap-1 mt-1",
 
                     span {
-                        style: "font-size: 0.7rem; color: rgba(255,255,255,0.6);",
+                        class: "text-[0.7rem] text-white/60",
                         "{time}"
                     }
 
                     if let Some(icon) = status_icon {
                         {
-                            let status_color = match &message.status {
-                                MessageStatus::Error(_) => "#f44336",
-                                MessageStatus::Delivered => "#4caf50",
-                                _ => "rgba(255,255,255,0.6)",
+                            let status_class = match &message.status {
+                                MessageStatus::Error(_) => "text-[0.7rem] text-error",
+                                MessageStatus::Delivered => "text-[0.7rem] text-success",
+                                _ => "text-[0.7rem] text-white/60",
                             };
                             rsx! {
                                 span {
-                                    style: "font-size: 0.7rem; color: {status_color};",
+                                    class: "{status_class}",
                                     "{icon}"
                                 }
                             }
@@ -103,7 +101,7 @@ pub fn MessageBubble(message: Message) -> Element {
                 // Error message if present
                 if let MessageStatus::Error(ref err) = message.status {
                     div {
-                        style: "font-size: 0.75rem; color: #f44336; margin-top: 4px;",
+                        class: "text-xs text-error mt-1",
                         "{err}"
                     }
                 }

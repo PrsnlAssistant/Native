@@ -19,3 +19,10 @@ Thumbs.db
 
 # Environment (if any secrets)
 .env.local
+
+# Generated CSS (Tailwind output)
+assets/tailwind.css
+
+# Node.js
+node_modules/
+package-lock.json

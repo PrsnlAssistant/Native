@@ -7,22 +7,19 @@ use dioxus::prelude::*;
 pub fn TypingIndicator() -> Element {
     rsx! {
         div {
-            style: "display: flex; align-items: center; padding: 8px 16px; margin-bottom: 12px;",
+            class: "flex items-center py-2 px-4 mb-3",
 
             div {
-                style: "background: #2d2d44; padding: 12px 16px; border-radius: 16px; display: flex; gap: 4px;",
+                class: "bg-bg-tertiary py-3 px-4 rounded-2xl flex gap-1",
 
                 span {
-                    class: "typing-dot",
-                    style: "width: 8px; height: 8px; background: #888; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both;",
+                    class: "w-2 h-2 bg-text-muted rounded-full animate-bounce-dot",
                 }
                 span {
-                    class: "typing-dot",
-                    style: "width: 8px; height: 8px; background: #888; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both;",
+                    class: "w-2 h-2 bg-text-muted rounded-full animate-bounce-dot animation-delay-150",
                 }
                 span {
-                    class: "typing-dot",
-                    style: "width: 8px; height: 8px; background: #888; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both;",
+                    class: "w-2 h-2 bg-text-muted rounded-full animate-bounce-dot animation-delay-300",
                 }
             }
         }

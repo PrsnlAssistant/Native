@@ -11,17 +11,17 @@ pub fn MediaPreview(
 ) -> Element {
     rsx! {
         div {
-            style: "flex-shrink: 0; padding: 8px 16px; background: #1a1a2e; border-top: 1px solid #2d2d44; display: flex; align-items: center; gap: 12px;",
+            class: "shrink-0 py-2 px-4 bg-bg-secondary border-t border-border flex items-center gap-3",
 
             // Thumbnail
             {
                 let img_src = format!("data:{};base64,{}", media.mimetype, media.data);
                 rsx! {
                     div {
-                        style: "width: 60px; height: 60px; border-radius: 8px; overflow: hidden; background: #2d2d44; flex-shrink: 0;",
+                        class: "w-15 h-15 rounded-lg overflow-hidden bg-bg-tertiary shrink-0",
                         img {
                             src: "{img_src}",
-                            style: "width: 100%; height: 100%; object-fit: cover;",
+                            class: "w-full h-full object-cover",
                         }
                     }
                 }
@@ -29,13 +29,13 @@ pub fn MediaPreview(
 
             // File info
             div {
-                style: "flex: 1; min-width: 0;",
+                class: "flex-1 min-w-0",
                 p {
-                    style: "margin: 0; color: white; font-size: 0.875rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;",
+                    class: "m-0 text-text-white text-sm overflow-hidden text-ellipsis whitespace-nowrap",
                     "{media.filename}"
                 }
                 p {
-                    style: "margin: 4px 0 0 0; color: #888; font-size: 0.75rem;",
+                    class: "mt-1 mb-0 text-text-muted text-xs",
                     "{media.mimetype}"
                 }
             }
@@ -43,7 +43,7 @@ pub fn MediaPreview(
             // Remove button
             button {
                 onclick: move |_| on_remove.call(()),
-                style: "background: #f44336; border: none; border-radius: 50%; width: 32px; height: 32px; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0;",
+                class: "bg-error border-none rounded-full w-8 h-8 text-text-white cursor-pointer flex items-center justify-center shrink-0 hover:opacity-80 transition-opacity",
                 "x"
             }
         }

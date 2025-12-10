@@ -9,23 +9,22 @@ pub fn ConnectionIndicator(
     status: ConnectionStatus,
     on_tap: EventHandler<()>,
 ) -> Element {
-    let (color, text, class) = match status {
-        ConnectionStatus::Connected => ("#4caf50", "Connected", ""),
-        ConnectionStatus::Connecting => ("#ff9800", "Connecting...", "status-connecting"),
-        ConnectionStatus::Reconnecting => ("#ff9800", "Reconnecting...", "status-reconnecting"),
-        ConnectionStatus::Disconnected => ("#f44336", "Disconnected", ""),
+    let (dot_class, text, btn_class) = match status {
+        ConnectionStatus::Connected => ("bg-success", "Connected", ""),
+        ConnectionStatus::Connecting => ("bg-warning animate-pulse-status", "Connecting...", ""),
+        ConnectionStatus::Reconnecting => ("bg-warning animate-pulse-status", "Reconnecting...", ""),
+        ConnectionStatus::Disconnected => ("bg-error", "Disconnected", ""),
     };
 
     rsx! {
         button {
             onclick: move |_| on_tap.call(()),
-            class: "{class}",
-            style: "background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 8px;",
+            class: "bg-transparent border-none cursor-pointer flex items-center gap-1.5 p-2 {btn_class}",
             span {
-                style: "width: 8px; height: 8px; border-radius: 50%; background: {color};",
+                class: "w-2 h-2 rounded-full {dot_class}",
             }
             span {
-                style: "color: #888; font-size: 0.75rem;",
+                class: "text-text-muted text-xs",
                 "{text}"
             }
         }

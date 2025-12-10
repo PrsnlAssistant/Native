@@ -23,9 +23,6 @@ use crate::features::{
     ChatScreen,
 };
 
-/// Sidebar width in pixels
-const SIDEBAR_WIDTH: &str = "300px";
-
 /// Desktop shell with sidebar and main content area
 ///
 /// This component renders a side-by-side layout with:
@@ -69,13 +66,11 @@ pub fn DesktopShell() -> Element {
 
     rsx! {
         div {
-            class: "desktop-shell",
-            style: "height: 100vh; display: flex; background-color: #0f0f23; color: #e0e0e0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;",
+            class: "h-screen h-dvh flex bg-bg-primary text-text-primary font-sans",
 
             // Sidebar - conversation list
             aside {
-                class: "desktop-sidebar",
-                style: "width: {SIDEBAR_WIDTH}; min-width: {SIDEBAR_WIDTH}; border-right: 1px solid #2d2d44; display: flex; flex-direction: column; background-color: #1a1a2e;",
+                class: "w-sidebar min-w-sidebar border-r border-border flex flex-col bg-bg-secondary",
 
                 // Header with title
                 SidebarHeader {}
@@ -91,8 +86,7 @@ pub fn DesktopShell() -> Element {
 
             // Main content - chat panel
             main {
-                class: "desktop-main",
-                style: "flex: 1; display: flex; flex-direction: column; overflow: hidden; background-color: #0f0f23;",
+                class: "flex-1 flex flex-col overflow-hidden bg-bg-primary",
 
                 if let Some(conv_id) = current_conv_id {
                     // Get conversation title
@@ -131,11 +125,10 @@ pub fn DesktopShell() -> Element {
 fn SidebarHeader() -> Element {
     rsx! {
         div {
-            class: "sidebar-header",
-            style: "flex-shrink: 0; padding: 16px; border-bottom: 1px solid #2d2d44; display: flex; justify-content: space-between; align-items: center;",
+            class: "shrink-0 p-4 border-b border-border flex justify-between items-center",
 
             h2 {
-                style: "margin: 0; font-size: 18px; font-weight: 600; color: #ffffff;",
+                class: "m-0 text-lg font-semibold text-text-white",
                 "Conversations"
             }
         }
@@ -147,21 +140,20 @@ fn SidebarHeader() -> Element {
 fn EmptyState() -> Element {
     rsx! {
         div {
-            class: "empty-state",
-            style: "flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #6b6b8a;",
+            class: "flex-1 flex flex-col items-center justify-center text-text-muted",
 
             // Placeholder icon
             div {
-                style: "font-size: 64px; margin-bottom: 24px; opacity: 0.5;",
+                class: "text-6xl mb-6 opacity-50",
                 "💬"
             }
 
             p {
-                style: "font-size: 18px; margin: 0 0 8px; color: #8888a8;",
+                class: "text-lg m-0 mb-2 text-text-secondary",
                 "No conversation selected"
             }
             p {
-                style: "font-size: 14px; margin: 0;",
+                class: "text-sm m-0",
                 "Select a conversation from the sidebar or create a new one"
             }
         }
